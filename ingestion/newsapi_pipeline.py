@@ -301,7 +301,7 @@ if __name__ == "__main__":
         "--dev", action="store_true", help="Use DuckDB (development mode)"
     )
     env_group.add_argument(
-        "--prod", action="store_true", help="Use MotherDuck (production mode)"
+        "--prod", action="store_true", help="Use BigQuery (production mode)"
     )
     parser.add_argument(
         "--full-refresh", action="store_true", help="Perform a full refresh"
@@ -316,7 +316,7 @@ if __name__ == "__main__":
         format="{time} | {level} | {message}",
     )
 
-    # Default to duckdb, use motherduck only if --prod is specified
-    destination = "motherduck" if args.prod else "duckdb"
+    # Default to DuckDB; use BigQuery when --prod is specified
+    destination = "bigquery" if args.prod else "duckdb"
 
     run_pipeline(destination=destination, full_refresh=args.full_refresh)

@@ -1,16 +1,18 @@
 # dwh-in-a-box
 
-An end-to-end data pipeline demonstrating **Data Governance as Code** with automated metadata validation, standardized schemas, and compliance enforcement.
+An end-to-end data pipeline demonstrating **Data Governance as Code** with automated metadata validation, standardized schemas, and compliance enforcement—powering Evidence BI dashboards from dbt marts across DuckDB (dev) and BigQuery (prod).
 
 ## 🏗️ Data Stack
 
-This project implements an end-to-end data governance flow with three core components:
+This project implements an end-to-end data governance flow with four core components:
 
-### 1. **dlt (Data Load Tool)** - Ingestion Layer
+### 1. **dlt (Data Load Tool)** - Ingestion layer (NewsAPI → warehouse)
 
-### 2. **dbt (Data Build Tool)** - Transformation Layer
+### 2. **DuckDB (dev) / BigQuery (prod)** - Storage & warehouse
 
-### 3. **DuckDB** - Analytics Database
+### 3. **dbt (Data Build Tool)** - Transformation layer producing marts
+
+### 4. **Evidence** - Business Intelligence as Code consuming the marts
 
 ## 📊 Data Flow
 
@@ -21,23 +23,39 @@ This project implements an end-to-end data governance flow with three core compo
 └──────┬──────┘
        │
        ▼
-┌─────────────┐      ┌──────────────┐
-│     dlt     │─────▶│   DuckDB     │
-│  (Ingestion)│      │  (Storage)   │
-└─────────────┘      └──────┬───────┘
-                            │
-                            ▼
-                    ┌─────────────┐
-                    │     dbt     │
-                    │(Transform)  │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │   Marts     │
-                    │(Analytics)  │
-                    └─────────────┘
+┌─────────────┐
+│     dlt     │
+│  (Ingest)   │
+└──────┬──────┘
+       │
+       ▼
+┌────────────────────────────────────┐
+│        Storage / Warehouse         │
+│ ┌─────────────┐   ┌──────────────┐ │
+│ │  DuckDB     │   │   BigQuery   │ │
+│ │ (dev/local) │   │   (prod)     │ │
+│ └──────┬──────┘   └──────┬───────┘ │
+└────────┼─────────────────┼─────────┘
+         ▼                 ▼
+      ┌──────────────────────────┐
+      │           dbt            │
+      │   (Transforms → Marts)   │
+      └──────────┬──────────────┘
+                 ▼
+         ┌─────────────┐
+         │    Marts    │
+         └──────┬──────┘
+                ▼
+         ┌─────────────┐
+         │  Evidence   │
+         │(BI as Code) │
+         └─────────────┘
 ```
+
+### Environments
+
+- Dev: DuckDB local file (`/tmp/newsapi_articles.duckdb`) loaded via `uv run python ingestion/newsapi_pipeline.py --dev`; dbt `profiles.yml` targets DuckDB by default.
+- Prod: BigQuery dataset loaded via `uv run python ingestion/newsapi_pipeline.py --prod` with `GOOGLE_APPLICATION_CREDENTIALS` set; add a BigQuery target to `transformation/profiles.yml` and run `dbt run --target prod`. Evidence should point to the same warehouse you use (DuckDB for dev, BigQuery for prod).
 
 ## 🔒 Data Governance as Code
 
@@ -50,7 +68,7 @@ This project implements a **minimal but complete** data governance framework whe
 ### Governance Components
 
 #### 1. Standard Metadata Schema
-**Location**: `governance-as-code/schemas/metadata_schema.py`
+**Location**: `data-governance-as-code/schemas/metadata_schema.py`
 
 Defines required and optional metadata fields for all dbt models:
 
@@ -68,7 +86,7 @@ Defines required and optional metadata fields for all dbt models:
 - `data_governance.sla` - Service level agreement
 
 #### 2. Automated Validation
-**Location**: `governance-as-code/validators/metadata_validator.py`
+**Location**: `data-governance-as-code/validators/metadata_validator.py`
 
 Python script that:
 - Scans all dbt model YAML files
@@ -108,17 +126,26 @@ cp credentials/dlt-newsapi-secrets.toml.example credentials/dlt-newsapi-secrets.
 ### Running the Pipeline
 
 ```bash
-# 1. Ingest data from NewsAPI to DuckDB
+# 1. Ingest data from NewsAPI
 cd ingestion
+# Dev: loads to DuckDB (local)
 uv run python newsapi_pipeline.py --dev
+# Prod: loads to BigQuery (requires credentials)
+GOOGLE_APPLICATION_CREDENTIALS=../credentials/service-account.json \
+  uv run python newsapi_pipeline.py --prod
 
-# 2. Transform data with dbt
+# 2. Transform data with dbt (dev targets DuckDB by default)
 cd ../transformation
 dbt run
 
 # 3. Validate governance metadata
 cd ..
 make validate-governance
+
+# 4. Run Evidence (BI as Code) against marts
+cd dashboard
+npm install
+npm run dev   # configure Evidence sources for DuckDB (dev) or BigQuery (prod)
 ```
 
 ## 📝 Usage Examples
@@ -151,7 +178,7 @@ models:
 make validate-governance
 
 # Or directly
-uv run python governance-as-code/validators/metadata_validator.py \
+uv run python data-governance-as-code/validators/metadata_validator.py \
   --dbt-project transformation
 ```
 
@@ -167,6 +194,11 @@ DATA GOVERNANCE METADATA VALIDATION REPORT
 
 ✅ Validation PASSED
 ```
+
+### Running Evidence Dashboards
+
+- Dev (DuckDB): ensure marts are built locally, point the Evidence source in `dashboard/sources/` to your DuckDB file (e.g., `/tmp/newsapi_articles.duckdb`), then `cd dashboard && npm install && npm run dev`.
+- Prod (BigQuery): update the Evidence source config under `dashboard/sources/` to point to your BigQuery project/dataset, set `GOOGLE_APPLICATION_CREDENTIALS`, then use `npm run preview` or `npm run build` for deployment.
 
 ## 📁 Project Structure
 
@@ -184,7 +216,11 @@ dwh-in-a-box/
 │   │   └── governance/          # Governance macros
 │   └── tests/                   # Data quality tests
 │
-└── governance-as-code/          # Governance framework
+├── dashboard/                    # Evidence (BI as Code) project consuming marts
+│   ├── pages/                    # Evidence pages
+│   └── sources/                  # Warehouse connections (DuckDB dev, BigQuery prod)
+│
+└── data-governance-as-code/          # Governance framework
     ├── schemas/                 # Metadata schema definitions
     └── validators/              # Validation scripts
 ```
@@ -243,7 +279,7 @@ The governance framework can be extended with:
 - [dlt Documentation](https://dlthub.com/docs)
 - [dbt Documentation](https://docs.getdbt.com)
 - [DuckDB Documentation](https://duckdb.org/docs/)
-- [Data Governance as Code Best Practices](governance-as-code/README.md)
+- [Data Governance as Code Best Practices](data-governance-as-code/README.md)
 
 ## 📄 License
 

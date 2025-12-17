@@ -5,7 +5,7 @@ This directory contains governance standards and validation scripts for the dwh-
 ## Structure
 
 ```
-governance-as-code/
+data-governance-as-code/
 ├── schemas/
 │   └── metadata_schema.py      # Standard metadata schema definitions
 ├── validators/
@@ -21,7 +21,7 @@ Run the validator to check all dbt models against governance standards:
 
 ```bash
 # From project root
-python governance-as-code/validators/metadata_validator.py --dbt-project transformation
+python data-governance-as-code/validators/metadata_validator.py --dbt-project transformation
 ```
 
 Or use the Makefile command:

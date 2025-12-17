@@ -60,7 +60,7 @@ logs-clean:
 # Governance validation
 validate-governance:
 	@echo "Validating dbt metadata against governance standards..."
-	uv run python governance-as-code/validators/metadata_validator.py --dbt-project transformation
+	uv run python data-governance-as-code/validators/metadata_validator.py --dbt-project transformation
 
 # Install governance dependencies
 install-governance:
