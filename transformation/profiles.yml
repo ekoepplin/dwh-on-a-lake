@@ -1,0 +1,12 @@
+dbt-data-governance-demo-profile:
+  outputs:
+    dev:
+      type: duckdb
+      extensions:
+        - httpfs
+        - parquet
+        - aws
+      path: /tmp/newsapi_articles.duckdb
+      schema: ingest_newsapi_v1
+      threads: 1
+  target: dev

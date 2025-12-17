@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: int_newsapi__articles
+    description: "Combined articles from US English and German sources"
+    meta:
+      # Standardized metadata using governance schema
+      data_governance:
+        business_owner: "alice@company.com"
+        team_owner: "data-team"
+        data_classification: "PUBLIC"
+        data_lifecycle: "PRODUCTION"
+        has_pii: false
+        can_be_referenced: true
+        update_schedule: "hourly"
+        sla: "daily"
+      # Legacy metadata (can be kept for backward compatibility)
+      owner: "data_team_name"
+      business_domain: "content"
+      priority: "high"
+      business_terms:
+        article: "A news article from either US or German sources"
+        source_name: "The official name of the news publication"
+      upstream_dependencies:
+        - "NewsAPI"
+      data_category: "news_content"
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('stg_newsapi__articles_us_en')
+          severity: warn
+    columns:
+      - name: source_name
+        description: "Name of the news source"
+        data_type: string
+        tests:
+          - not_null
+      - name: author
+        description: "Author of the article"
+        data_type: string
+      - name: title
+        description: "Title of the article"
+        data_type: string
+        tests:
+          - not_null
+      - name: description
+        description: "Description or summary of the article"
+        data_type: string
+      - name: url
+        description: "URL to the article"
+        data_type: string
+        tests:
+          - not_null
+      - name: image_url
+        description: "URL to the article's image"
+        data_type: string
+      - name: published_at
+        description: "Publication date and time"
+        data_type: timestamp
+        tests:
+          - not_null
+      - name: content
+        description: "Article content"
+        data_type: string
+      - name: language_code
+        description: "Language code (en or de)"
+        data_type: string
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['en', 'de']
+      - name: _dlt_load_id
+        description: "Load ID from data loading tool"
+        data_type: string
+        tests:
+          - not_null
+      - name: _dlt_id
+        description: "Unique ID from data loading tool"
+        data_type: string
+        tests:
+          - not_null
+          - unique
+      - name: source_table
+        description: "Source table identifier (us_en or de_de)"
+        data_type: string
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['us_en', 'de_de'] 

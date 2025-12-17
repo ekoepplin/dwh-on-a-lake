@@ -1,0 +1,9 @@
+[runtime]
+log_level = "WARNING"  
+dlthub_telemetry = true
+
+[normalize]
+loader_file_format="parquet"
+
+[destination]
+name = "bigquery"

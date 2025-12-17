@@ -1,0 +1,34 @@
+# Data Retention and Deletion Policies
+#
+# These policies define retention requirements for different data types
+# and classifications. Rules reference these policies for validation.
+
+retention_policies:
+  # Default retention periods by data classification
+  default_retention_days:
+    PUBLIC: 365        # 1 year for public data
+    INTERNAL: 730      # 2 years for internal data
+    CONFIDENTIAL: 1095 # 3 years for confidential data
+    RESTRICTED: 1825   # 5 years for restricted data
+  
+  # PII-specific retention requirements
+  pii_retention:
+    minimum_days: 90           # Minimum retention period for PII
+    maximum_days: 2555         # Maximum retention (7 years for compliance)
+    gdpr_default: 365          # GDPR default retention
+    ccpa_default: 365          # CCPA default retention
+  
+  # Financial data retention (often required by law)
+  financial_data:
+    minimum_days: 1825         # 5 years minimum
+  
+  # Healthcare data retention (HIPAA)
+  healthcare_data:
+    minimum_days: 2555         # 7 years minimum
+  
+  # Deletion requirements
+  deletion:
+    require_retention_date_field: true  # PII models must specify retention_date_field
+    require_anonymization_method: true # PII models must specify anonymization method
+    allow_hard_delete: false            # Prefer anonymization over deletion
+
