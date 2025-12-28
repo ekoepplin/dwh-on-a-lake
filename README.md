@@ -1,13 +1,21 @@
 # dwh-in-a-box
 
-An end-to-end data pipeline demonstrating **Data Governance as Code** with automated metadata validation, standardized schemas, and compliance enforcement—powering Evidence BI dashboards from dbt marts across DuckDB (dev) and BigQuery (prod).
+A complete, fast, and simple data warehouse solution built with open-source tools. Get from raw data to production-ready analytics in minutes—with ingestion, transformation, BI dashboards, and **data governance** all included out of the box.
 
-## 🏗️ Data Stack
+## Why This Exists
 
-- **dlt** ingestion (NewsAPI) → DuckDB (dev) or BigQuery (prod)
-- **dbt** transforms → governed marts
-- **Evidence** (BI as Code) on top of marts
-- **Data Governance as Code** baked into dbt metadata and validators
+Data warehousing doesn't have to be slow, complex, or expensive. This project proves you can build a production-ready data stack that's:
+- **Fast to set up**: Get running in minutes, not months
+- **Simple to operate**: Everything is code—no vendor lock-in, no black boxes
+- **Feature-rich**: Ingestion, transformation, BI, and governance all included
+- **Cost-effective**: Open-source tools that scale from laptop to cloud
+
+## 🏗️ Complete Data Stack
+
+- **dlt** for ingestion (NewsAPI example) → DuckDB (dev) or BigQuery (prod)
+- **dbt Core** for transformations → analytics-ready marts
+- **Evidence** for BI dashboards (BI as Code)
+- **Data Governance as Code** with automated metadata validation and compliance enforcement
 
 ## 📊 Data Flow
 
@@ -47,15 +55,30 @@ An end-to-end data pipeline demonstrating **Data Governance as Code** with autom
          └─────────────┘
 ```
 
-## 🔒 Data Governance (snapshot)
+## ✨ Key Features
 
-- Standardized dbt metadata + validators + macros.
-- Governed marts power Evidence dashboards.
+- **Fast ingestion** with dlt: Connect to APIs, databases, and files in minutes
+- **Powerful transformations** with dbt: Build reliable, tested data models
+- **Beautiful dashboards** with Evidence: BI as Code—versioned, reviewable, deployable
+- **Data governance built-in**: Automated metadata validation, standardized schemas, compliance enforcement
+- **Dev/prod parity**: Same code runs on DuckDB locally and BigQuery in production
+- **Zero vendor lock-in**: Everything is open source and portable
+
+## 🔒 Data Governance
+
+Data governance is baked in, not bolted on:
+- Standardized dbt metadata schemas
+- Automated validation scripts
+- Compliance enforcement at build time
 - Details and how-to: `GETTING_STARTED.md` and `data-governance-as-code/README.md`.
 
 ## 🚀 Getting Started
 
-See `GETTING_STARTED.md` for install, dev/prod setup, running ingestion + dbt + governance, Evidence configuration, and example snippets.
+Get up and running in minutes. See `GETTING_STARTED.md` for:
+- Quick installation steps
+- Dev/prod setup (DuckDB for local, BigQuery for production)
+- Running the full pipeline: ingestion → transformation → governance → dashboards
+- Example configurations and snippets
 
 ## 📁 Project Structure
 
