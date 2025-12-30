@@ -10,7 +10,7 @@ dependencies = [
     "dbt-core>=1.8.0,<2.0.0",
     "dbt-duckdb>=1.8.0,<2.0.0",
     "dlt[bigquery,duckdb,workspace]>=1.16.0",
-    "duckdb>=1.4.2,<2.0.0",
+    "duckdb==0.10.2",
     "loguru>=0.7.3",
     "newsapi==0.1.1",
     "newsapi-python==0.2.7",

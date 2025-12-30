@@ -1,6 +1,6 @@
 # Getting Started
 
-Hands-on steps to install, configure, and run `dwh-in-a-box`, covering dev (DuckDB) and prod (BigQuery) paths, plus Evidence dashboards.
+Hands-on steps to install, configure, and run `dwh-in-a-box`, covering dev and prod paths with DuckDB, plus Evidence dashboards.
 
 ## Prerequisites
 
@@ -8,8 +8,7 @@ Hands-on steps to install, configure, and run `dwh-in-a-box`, covering dev (Duck
 - [uv](https://github.com/astral-sh/uv) package manager
 - Node.js 18+ and npm (for Evidence)
 - DuckDB (installed via deps)
-- NewsAPI key (for ingestion)
-- BigQuery service account JSON (for prod)
+- NewsAPI key (for ingestion) - get a free developer API key at https://newsapi.org/
 
 ## Installation
 
@@ -22,14 +21,21 @@ cd dwh-in-a-box
 uv sync
 
 # Configure credentials
-cp credentials/dlt-newsapi-secrets.toml.example credentials/dlt-newsapi-secrets.toml
-# Add your NewsAPI key to the secrets file
+# Create credentials/dlt-newsapi-secrets.toml with the following content:
+# [sources.newsapi_pipeline]
+# api_key = "YOUR_NEWSAPI_KEY_HERE"
+#
+# [newsapi_pipeline.destination]
+# schema_name = "ingest_newsapi_v1"
+#
+# Replace YOUR_NEWSAPI_KEY_HERE with your actual API key from https://newsapi.org/
+# Note: If using BigQuery as destination, also add [destination.bigquery] section with your credentials
 ```
 
 ## Environments
 
-- Dev (DuckDB): uses local file `/tmp/newsapi_articles.duckdb`; dbt `profiles.yml` targets DuckDB by default.
-- Prod (BigQuery): set `GOOGLE_APPLICATION_CREDENTIALS=credentials/service-account.json`; add a BigQuery target to `transformation/profiles.yml` and run dbt with `--target prod`.
+- Dev (DuckDB): uses local file `reports/sources/duckdb/newsapi_articles.duckdb`; dbt `profiles.yml` targets DuckDB by default.
+- Prod (DuckDB/MotherDuck): configure your production DuckDB connection in `transformation/profiles.yml` and run dbt with `--target prod`.
 
 ## Run the pipeline
 
@@ -38,30 +44,29 @@ cp credentials/dlt-newsapi-secrets.toml.example credentials/dlt-newsapi-secrets.
 cd ingestion
 # Dev: loads to DuckDB (local)
 uv run python newsapi_pipeline.py --dev
-# Prod: loads to BigQuery (requires credentials)
-GOOGLE_APPLICATION_CREDENTIALS=../credentials/service-account.json \
-  uv run python newsapi_pipeline.py --prod
+# Prod: loads to DuckDB/MotherDuck
+uv run python newsapi_pipeline.py --prod
 
 # 2. Transform data with dbt
 cd ../transformation
 dbt run                # dev (DuckDB)
-dbt run --target prod  # prod (BigQuery), once configured
+dbt run --target prod  # prod (DuckDB/MotherDuck), once configured
 
 # 3. Validate governance metadata
 cd ..
 make validate-governance
 
 # 4. Run Evidence (BI as Code) against marts
-cd dashboard
+cd reports
 npm install
 npm run dev        # dev; points to DuckDB when configured
-npm run preview    # prod; configure BigQuery source + credentials
+npm run preview    # prod; configure DuckDB/MotherDuck source
 ```
 
 ## Evidence sources
 
-- Dev (DuckDB): point `dashboard/sources/` to your DuckDB file (e.g., `/tmp/newsapi_articles.duckdb`).
-- Prod (BigQuery): update `dashboard/sources/` to your BigQuery project/dataset and set `GOOGLE_APPLICATION_CREDENTIALS`.
+- Dev (DuckDB): point `reports/sources/duckdb/connection.yaml` to your DuckDB file (e.g., `reports/sources/duckdb/newsapi_articles.duckdb`).
+- Prod (DuckDB/MotherDuck): update `reports/sources/` to your production DuckDB or MotherDuck connection.
 
 ## Usage examples
 

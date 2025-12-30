@@ -1,4 +1,4 @@
-dbt-data-governance-demo-profile:
+dwh-in-a-box-profile:
   outputs:
     dev:
       type: duckdb
@@ -6,7 +6,7 @@ dbt-data-governance-demo-profile:
         - httpfs
         - parquet
         - aws
-      path: /tmp/newsapi_articles.duckdb
+      path: ../reports/sources/duckdb/newsapi_articles.duckdb
       schema: ingest_newsapi_v1
       threads: 1
   target: dev

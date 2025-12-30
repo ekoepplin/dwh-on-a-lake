@@ -12,7 +12,7 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 
 ## 🏗️ Complete Data Stack
 
-- **dlt** for ingestion (NewsAPI example) → DuckDB (dev) or BigQuery (prod)
+- **dlt** for ingestion (NewsAPI example) → DuckDB (dev/prod)
 - **dbt Core** for transformations → analytics-ready marts
 - **Evidence** for BI dashboards (BI as Code)
 - **Data Governance as Code** with automated metadata validation and compliance enforcement
@@ -34,12 +34,12 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
        ▼
 ┌────────────────────────────────────┐
 │        Storage / Warehouse         │
-│ ┌─────────────┐   ┌──────────────┐ │
-│ │  DuckDB     │   │   BigQuery   │ │
-│ │ (dev/local) │   │   (prod)     │ │
-│ └──────┬──────┘   └──────┬───────┘ │
-└────────┼─────────────────┼─────────┘
-         ▼                 ▼
+│ ┌─────────────┐                    │
+│ │  DuckDB     │                    │
+│ │ (dev/prod)  │                    │
+│ └──────┬──────┘                    │
+└────────┼───────────────────────────┘
+         ▼
       ┌──────────────────────────┐
       │           dbt            │
       │   (Transforms → Marts)   │
@@ -61,7 +61,7 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 - **Powerful transformations** with dbt: Build reliable, tested data models
 - **Beautiful dashboards** with Evidence: BI as Code—versioned, reviewable, deployable
 - **Data governance built-in**: Automated metadata validation, standardized schemas, compliance enforcement
-- **Dev/prod parity**: Same code runs on DuckDB locally and BigQuery in production
+- **Dev/prod parity**: Same code runs on DuckDB locally and in production
 - **Zero vendor lock-in**: Everything is open source and portable
 
 ## 🔒 Data Governance
@@ -76,7 +76,7 @@ Data governance is baked in, not bolted on:
 
 Get up and running in minutes. See `GETTING_STARTED.md` for:
 - Quick installation steps
-- Dev/prod setup (DuckDB for local, BigQuery for production)
+- Dev/prod setup with DuckDB
 - Running the full pipeline: ingestion → transformation → governance → dashboards
 - Example configurations and snippets
 
@@ -96,9 +96,9 @@ dwh-in-a-box/
 │   │   └── governance/          # Governance macros
 │   └── tests/                   # Data quality tests
 │
-├── dashboard/                    # Evidence (BI as Code) project consuming marts
+├── reports/                      # Evidence (BI as Code) project consuming marts
 │   ├── pages/                    # Evidence pages
-│   └── sources/                  # Warehouse connections (DuckDB dev, BigQuery prod)
+│   └── sources/                  # Warehouse connections (DuckDB)
 │
 └── data-governance-as-code/          # Governance framework
     ├── schemas/                 # Metadata schema definitions
@@ -109,7 +109,7 @@ dwh-in-a-box/
 
 - Getting started: `GETTING_STARTED.md`
 - Governance reference: `data-governance-as-code/README.md`
-- Evidence project: `dashboard/`
+- Evidence project: `reports/`
 - dbt project: `transformation/`
 
 ## 📚 Learn More

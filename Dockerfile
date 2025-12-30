@@ -1,16 +1,17 @@
 FROM --platform=${TARGETPLATFORM:-linux/amd64} python:3.11.11 AS base
 
-# Install system dependencies and uv
+# Install system dependencies, Node.js (for Evidence), and uv
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     libaio1 \
     wget \
     unzip \
-    git && \
-    wget https://github.com/duckdb/duckdb/releases/download/v1.4.2/duckdb_cli-linux-amd64.zip && \
-    unzip duckdb_cli-linux-amd64.zip -d /usr/local/bin && \
-    rm duckdb_cli-linux-amd64.zip && \
+    git \
+    nodejs \
+    npm \
+    build-essential \
+    python3-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
