@@ -14,6 +14,7 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 
 - **dlt** for ingestion (NewsAPI example) → DuckDB (dev/prod)
 - **dbt Core** for transformations → analytics-ready marts
+- **Jupyter Notebooks** for Exploratory Data Analysis (EDA): Quickly explore your ingested data, prototype transformations before formalizing them in dbt, and accelerate your analytics workflow
 - **Evidence** for BI dashboards (BI as Code)
 - **Data Governance as Code** with automated metadata validation and compliance enforcement
 
