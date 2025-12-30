@@ -23,10 +23,6 @@ sources:
         team_email: "data-team@company.com"
     
     tables:
-      - name: raw_newsapi__articles_de_de
-        identifier: articles_de_de
-        description: "German articles from NewsAPI"
-
       - name: raw_newsapi__articles_us_en
         identifier: articles_us_en
         description: "US English articles from NewsAPI"

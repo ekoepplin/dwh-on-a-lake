@@ -28,9 +28,6 @@ ToDo.md
 .dbt/
 scratch/
 .env
-/dashboard
-/discoverability
-/soda
 .devcontainer/node-container/
 credentials/
 *.json

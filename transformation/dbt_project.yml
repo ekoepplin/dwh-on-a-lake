@@ -1,8 +1,8 @@
-name: 'dbt_data_governance_demo'
+name: 'dwh_in_a_box'
 version: '1.0.0'
 config-version: 2
 
-profile: 'dbt-data-governance-demo-profile'
+profile: 'dwh-in-a-box-profile'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -17,7 +17,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  dbt_data_governance_demo:
+  dwh_in_a_box:
     materialized: table
     intermediate:
       +materialized: view

@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: mart_newsapi__articles
+    description: "Minimal mart model with one time variable and two key metrics for dashboard"
+    meta:
+      data_governance:
+        business_owner: "analytics-team@company.com"
+        team_owner: "data-analytics"
+        data_classification: "PUBLIC"
+        data_lifecycle: "PRODUCTION"
+        has_pii: false
+        can_be_referenced: true
+        update_schedule: "daily"
+        sla: "daily"
+    columns:
+      - name: article_date
+        description: "Date of article publication"
+        tests:
+          - not_null
+      - name: source_name
+        description: "Name of the news source"
+        tests:
+          - not_null
+      - name: total_articles
+        description: "Total number of articles published on this date"
+        tests:
+          - not_null
+      - name: copilot_articles
+        description: "Number of Microsoft Copilot-related articles on this date"
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - article_date
+            - source_name
+
