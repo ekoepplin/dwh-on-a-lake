@@ -43,7 +43,7 @@ def run_pipeline(destination="bigquery", full_refresh=False):
         pipeline = dlt.pipeline(
             pipeline_name="newsapi_articles",
             destination=dlt.destinations.duckdb(
-                "reports/sources/duckdb/newsapi_articles.duckdb"
+                "tmp/newsapi_articles.duckdb"
             ),
             dataset_name=target_schema_name,
         )
