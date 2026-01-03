@@ -6,7 +6,7 @@ dwh-in-a-box-profile:
         - httpfs
         - parquet
         - aws
-      path: ../reports/sources/duckdb/newsapi_articles.duckdb
+      path: ../tmp/newsapi_articles.duckdb
       schema: ingest_newsapi_v1
       threads: 1
   target: dev
