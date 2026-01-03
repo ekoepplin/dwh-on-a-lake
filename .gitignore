@@ -1,34 +1,29 @@
 # dlt
 **/secrets.toml 
 **/.env
-
 # dbt
 target/
 dbt_packages/
 logs/
-
 # Python
 *.pyc
 __pycache__/
 venv/
 .venv
 # IDE files
-.vscode/
 .idea/
-.cursor/
-AGENTS.md
 # OS files
 .DS_Store
 Thumbs.db
 
 # Custom files
+.cursor/
 ToDo.md
 *.duckdb
 *.db
 .dbt/
-scratch/
-.env
-.devcontainer/node-container/
 credentials/
-*.json
-!package.json
+# Next to release
+analytics/
+reports/
+data-governance-as-code/

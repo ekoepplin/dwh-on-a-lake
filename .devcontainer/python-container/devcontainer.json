@@ -1,0 +1,276 @@
+// DWH in a Box Container for Ingestion and dbt Transformation
+{
+	"name": "DWH in a Box (Python/dbt)",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"build": {
+		"dockerfile": "../../Dockerfile",
+		"context": "../..",
+		"target": "development",
+		"args": { 
+			// Options arm64 or amd64
+			"PLATFORM": "amd64",
+			"BUILDPLATFORM": "linux/amd64",
+			"TARGETPLATFORM": "linux/amd64"
+		}
+	},
+  
+	"mounts": [
+	  "source=${localWorkspaceFolder}/ingestion/.dlt/config.toml,target=/app/ingestion/.dlt/config.toml,type=bind,consistency=cached",
+	  // Mount credentials directory with read-only access for better security
+	  "source=${localWorkspaceFolder}/credentials,target=/app/credentials,type=bind,consistency=cached,readonly"
+	],
+  
+	"remoteEnv": {
+	  "DLT_PROJECT_DIR": "/app/ingestion",
+	  "PYTHONPATH": "/app:/app/ingestion:/app/transformation"
+	},
+  
+	"runArgs": [
+	  "--network", "host"
+	],
+  
+	// Use non-root user for better security (create in Dockerfile if needed)
+	"remoteUser": "root",
+  
+	// Copy secrets with proper permissions and ensure credentials directory exists
+	// Note: readonly mount means we can read but not write back to host
+	"postCreateCommand": "mkdir -p /app/ingestion/.dlt && chmod 700 /app/ingestion/.dlt && if [ -f /app/credentials/dlt-newsapi-secrets.toml ] && [ ! -f /app/ingestion/.dlt/secrets.toml ]; then cp /app/credentials/dlt-newsapi-secrets.toml /app/ingestion/.dlt/secrets.toml && chmod 600 /app/ingestion/.dlt/secrets.toml; fi",
+  
+	"customizations": {
+	  "vscode": {
+		"extensions": [
+		  "ms-python.python",
+		  "ms-python.pylint",
+		  "ms-python.black-formatter",
+		  "ms-python.debugpy",
+		  "ms-python.vscode-pylance",
+		  "ms-toolsai.jupyter",
+		  "ms-toolsai.jupyter-keymap",
+		  "ms-toolsai.jupyter-renderers",
+		  "ms-azuretools.vscode-docker",
+		  "visualstudioexptteam.vscodeintellicode",
+		  "redhat.vscode-yaml",
+		  "editorconfig.editorconfig",
+		  "ms-vscode.vscode-json",
+		  "ms-toolsai.datawrangler",
+		  "ms-python.isort",
+		  "ms-python.flake8",
+		  "ms-python.autopep8",
+		  "ms-vscode.vscode-sqlite3",
+		  "bastienboutonnet.vscode-dbt",
+		  "innoverio.vscode-dbt-power-user",
+		  "samuelcolvin.jinjahtml",
+		  "amodio.find-related"
+		],
+		"settings": {
+		  "terminal.integrated.defaultProfile.linux": "bash",
+		  "terminal.integrated.profiles.linux": {
+			"bash": { "path": "/bin/bash" }
+		  },
+  
+		  "files.associations": {
+			"*.csv": "csv",
+			"*.toml": "toml",
+			"*.yml": "yaml",
+			"*.yaml": "yaml",
+			"*.sql": "jinja-sql",
+			"*.sqlfluff": "ini",
+			"**/.dlt/**": "toml",
+			"**/data/**": "csv",
+			"**/target/**": ""
+		  },
+		  "files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/__pycache__": true,
+			"**/.venv": true,
+			"**/node_modules": true
+		  },
+		  
+		  "findrelated.workspaceRulesets": [
+			{
+			  "name": "sql",
+			  "rules": [
+				{
+				  "pattern": "^(.*/)?models/(.*/)?(.+\\.sql)$",
+				  "locators": ["**/compiled/**/$3"]
+				},
+				{
+				  "pattern": "^(.*/)?compiled/(.*/)?(.+\\.sql)$",
+				  "locators": ["**/run/**/$3"]
+				},
+				{
+				  "pattern": "^(.*/)?run/(.*/)?(.+\\.sql)$",
+				  "locators": ["**/models/**/$3"]
+				}
+			  ]
+			}
+		  ],
+		  "findrelated.applyRulesets": ["sql"],
+		  "findrelated.applyWorkspaceRulesets": ["sql"],
+  
+		  "workbench.editor.highlightModifiedTabs": true,
+		  "workbench.editor.labelFormat": "medium",
+		  "workbench.editor.revealIfOpen": true,
+		  "editor.rulers": [88, 99, 120],
+  
+		  "python.defaultInterpreterPath": "/usr/local/bin/python",
+		  "python.analysis.extraPaths": [
+			"/usr/local/lib/python3.11/site-packages",
+			"/app",
+			"/app/ingestion",
+			"/app/transformation"
+		  ],
+		  "python.linting.enabled": true,
+		  "python.linting.pylintEnabled": true,
+		  "python.linting.flake8Enabled": true,
+		  "python.formatting.provider": "black",
+		  "python.sortImports.args": ["--profile", "black"],
+  
+		  "jupyter.askForKernelRestart": false,
+		  "jupyter.allowImportFromNotebook": true,
+		  "datawrangler.enableDataWrangler": true,
+  
+		  "csv-edit.delimiter": ",",
+		  "csv-edit.quoteChar": "\"",
+		  "csv-edit.encoding": "utf-8",
+		  
+		  "dbt.queryLimit": 500,
+		  "dbt.enableNewLineagePanel": true,
+		  "dbt.profilesDirOverride": "${workspaceFolder}/transformation",
+		  
+		  "yaml.schemas": {
+			"https://raw.githubusercontent.com/dbt-labs/dbt-jsonschema/main/schemas/dbt_yml_files.json": [
+			  "transformation/**/*.yml",
+			  "!transformation/profiles.yml",
+			  "!transformation/dbt_project.yml",
+			  "!transformation/packages.yml",
+			  "!transformation/selectors.yml",
+			  "!transformation/profile_template.yml"
+			],
+			"https://raw.githubusercontent.com/dbt-labs/dbt-jsonschema/main/schemas/dbt_project.json": [
+			  "transformation/dbt_project.yml"
+			],
+			"https://raw.githubusercontent.com/dbt-labs/dbt-jsonschema/main/schemas/selectors.json": [
+			  "transformation/selectors.yml"
+			],
+			"https://raw.githubusercontent.com/dbt-labs/dbt-jsonschema/main/schemas/packages.json": [
+			  "transformation/packages.yml"
+			]
+		  }
+		},
+		"tasks": {
+		  "version": "2.0.0",
+		  "tasks": [
+			{
+			  "label": "Run Ingestion Pipeline (DuckDB Dev)",
+			  "type": "shell",
+			  "command": "cd /app/ingestion && uv run python newsapi_pipeline.py --dev",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "build",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "Run Ingestion Pipeline (MotherDuck Prod)",
+			  "type": "shell",
+			  "command": "cd /app/ingestion && uv run python newsapi_pipeline.py --prod",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "build",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "Run Ingestion Pipeline (Full Refresh)",
+			  "type": "shell",
+			  "command": "cd /app/ingestion && uv run python newsapi_pipeline.py --dev --full-refresh",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "build",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "dbt: Run All Models",
+			  "type": "shell",
+			  "command": "cd /app/transformation && dbt run",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "build",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "dbt: Run Tests",
+			  "type": "shell",
+			  "command": "cd /app/transformation && dbt test",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "test",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "dbt: Compile",
+			  "type": "shell",
+			  "command": "cd /app/transformation && dbt compile",
+			  "problemMatcher": []
+			},
+			{
+			  "label": "dbt: Generate Docs",
+			  "type": "shell",
+			  "command": "cd /app/transformation && dbt docs generate",
+			  "problemMatcher": []
+			},
+			{
+			  "label": "dbt: Serve Docs",
+			  "type": "shell",
+			  "command": "cd /app/transformation && dbt docs serve",
+			  "problemMatcher": [],
+			  "isBackground": true
+			},
+			{
+			  "label": "Validate Governance Metadata",
+			  "type": "shell",
+			  "command": "cd /app && uv run python governance-as-code/validators/metadata_validator.py --dbt-project transformation",
+			  "problemMatcher": [],
+			  "group": {
+				"kind": "test",
+				"isDefault": false
+			  }
+			},
+			{
+			  "label": "Install Dependencies",
+			  "type": "shell",
+			  "command": "cd /app && uv sync",
+			  "problemMatcher": []
+			},
+			{
+			  "label": "Lint Code",
+			  "type": "shell",
+			  "command": "cd /app && make lint",
+			  "problemMatcher": []
+			},
+			{
+			  "label": "Fix Code Style",
+			  "type": "shell",
+			  "command": "cd /app && make fix",
+			  "problemMatcher": []
+			}
+		  ]
+		}
+	  }
+	},
+  
+	"forwardPorts": [8080, 8888, 4213],
+	"portsAttributes": {
+	  "8080": { "label": "DLT Pipeline UI", "onAutoForward": "openBrowser" },
+	  "8888": { "label": "Jupyter Notebook", "onAutoForward": "openBrowser" },
+	  "4213": { "label": "DuckDB UI", "onAutoForward": "openBrowser" }
+	}
+  }
