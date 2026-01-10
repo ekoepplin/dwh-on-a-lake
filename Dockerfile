@@ -1,19 +1,18 @@
 FROM --platform=${TARGETPLATFORM:-linux/amd64} python:3.11.11 AS base
 
-# Install system dependencies, Node.js (for Evidence), and uv
+# Install system dependencies and uv
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
-    libaio1 \
     wget \
     unzip \
-    git \
-    nodejs \
-    npm \
-    build-essential \
-    python3-dev && \
+    git && \
+    wget https://github.com/duckdb/duckdb/releases/download/v1.4.2/duckdb_cli-linux-amd64.zip && \
+    unzip duckdb_cli-linux-amd64.zip -d /usr/local/bin && \
+    rm duckdb_cli-linux-amd64.zip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 # Install uv using the official installer
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -44,6 +43,10 @@ RUN rm -rf .venv && uv sync --locked --no-dev --no-install-project
 
 # Add venv to PATH so we can use the installed packages
 ENV PATH="/app/.venv/bin:$PATH"
+
+# Install dbt packages
+WORKDIR /app/transformation
+RUN dbt deps
 
 # Run the main application (keep container alive for dev)
 WORKDIR /app

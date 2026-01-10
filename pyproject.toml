@@ -1,5 +1,5 @@
 [project]
-name = "dwh-in-a-box"
+name = "dwh-on-a-lake"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -10,11 +10,11 @@ dependencies = [
     "dbt-core>=1.8.0,<2.0.0",
     "dbt-duckdb>=1.8.0,<2.0.0",
     "dlt[bigquery,duckdb,workspace]>=1.16.0",
-    "duckdb==0.10.2",
+    "duckdb>=1.4.2,<2.0.0",  # "duckdb==0.10.2" since Evidence BI has a dependency on duckdb==0.10.2
     "loguru>=0.7.3",
-    "newsapi==0.1.1",
-    "newsapi-python==0.2.7",
+    "newsapi-python==0.2.7",  # Provides newsapi.newsapi_client.NewsApiClient
     "requests>=2.32.5",
+    "tenacity>=8.2.0",  # Retry logic for API calls
     "typing_extensions>=4.5.0",  # Required for pydantic_core (Sentinel support)
     "pyyaml>=6.0",  # Added for YAML parsing in validators
 ]

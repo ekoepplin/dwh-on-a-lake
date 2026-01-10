@@ -1,6 +1,6 @@
-// DWH in a Box Container for Ingestion and dbt Transformation
+// DWH on a Lake Container for Ingestion and dbt Transformation
 {
-	"name": "DWH in a Box (Python/dbt)",
+	"name": "DWH on a Lake (Python/dbt)",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": {
 		"dockerfile": "../../Dockerfile",

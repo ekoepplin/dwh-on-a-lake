@@ -1,6 +1,6 @@
 # Getting Started
 
-Hands-on steps to install, configure, and run `dwh-in-a-box`, covering dev and prod paths with DuckDB.
+Hands-on steps to install, configure, and run `dwh-on-a-lake`, covering dev and prod paths with DuckDB.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Hands-on steps to install, configure, and run `dwh-in-a-box`, covering dev and p
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd dwh-in-a-box
+cd dwh-on-a-lake
 
 # Install Python deps
 uv sync
