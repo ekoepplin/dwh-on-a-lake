@@ -1,8 +1,8 @@
-name: 'dwh_in_a_box'
+name: 'dwh_on_a_lake'
 version: '1.0.0'
 config-version: 2
 
-profile: 'dwh-in-a-box-profile'
+profile: 'dwh-on-a-lake-profile'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -17,7 +17,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  dwh_in_a_box:
+  dwh_on_a_lake:
     materialized: table
     intermediate:
       +materialized: view

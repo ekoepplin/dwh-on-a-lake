@@ -32,7 +32,8 @@ models:
           - not_null
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - article_date
-            - source_name
+          arguments:
+            combination_of_columns:
+              - article_date
+              - source_name
 

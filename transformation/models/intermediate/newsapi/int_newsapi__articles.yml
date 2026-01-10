@@ -2,21 +2,58 @@ version: 2
 
 models:
   - name: int_newsapi__articles
-    description: "Simple intermediate model that enriches articles with date and topic categorization"
+    description: "Intermediate model that enriches articles with date extraction and topic categorization"
     columns:
       - name: source_name
         description: "Name of the news source"
+        tests:
+          - not_null
       - name: author
         description: "Article author"
       - name: title
         description: "Article title"
+        tests:
+          - not_null
+      - name: url
+        description: "URL of the article"
+        tests:
+          - not_null
+          - unique
+      - name: published_at
+        description: "Timestamp of article publication"
+        tests:
+          - not_null
       - name: article_date
-        description: "Date of article publication"
+        description: "Date of article publication (derived from published_at)"
+        tests:
+          - not_null
       - name: topic_category
         description: "Categorized topic: Microsoft Copilot, Microsoft, AI, Tech, Startups, or Other"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - "Microsoft Copilot"
+                  - "Microsoft"
+                  - "AI"
+                  - "Tech"
+                  - "Startups"
+                  - "Other"
       - name: is_copilot_related
-        description: "Boolean flag indicating if article is about Microsoft Copilot"
+        description: "Boolean flag indicating if article mentions Microsoft Copilot"
+        tests:
+          - not_null
       - name: is_microsoft_related
-        description: "Boolean flag indicating if article is about Microsoft"
+        description: "Boolean flag indicating if article mentions Microsoft"
+        tests:
+          - not_null
       - name: is_ai_related
-        description: "Boolean flag indicating if article is AI-related"
+        description: "Boolean flag indicating if article mentions AI"
+        tests:
+          - not_null
+      - name: _dlt_id
+        description: "Unique identifier from dlt"
+        tests:
+          - not_null
+          - unique

@@ -1,4 +1,4 @@
-# dwh-in-a-box
+# dwh-on-a-lake
 
 A complete, fast, and simple data warehouse solution built with open-source tools. Get from raw data to production-ready analytics in minutes—with ingestion and transformation included out of the box.
 
@@ -68,7 +68,7 @@ Get up and running in minutes. See `GETTING_STARTED.md` for:
 ## 📁 Project Structure
 
 ```
-dwh-in-a-box/
+dwh-on-a-lake/
 ├── ingestion/                    # dlt pipelines
 │   └── newsapi_pipeline.py      # NewsAPI ingestion
 │

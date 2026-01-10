@@ -1,5 +1,5 @@
 -- Intermediate model: Clean and enrich articles with basic derived fields
-SELECT 
+SELECT
     source_name,
     author,
     title,
@@ -13,18 +13,14 @@ SELECT
     _dlt_id,
     -- Date dimension
     CAST(published_at AS DATE) AS article_date,
-    -- Article categorization
-    CASE 
-        WHEN LOWER(title) LIKE '%microsoft copilot%' OR LOWER(title) LIKE '%copilot%' THEN 'Microsoft Copilot'
-        WHEN LOWER(title) LIKE '%ai%' OR LOWER(title) LIKE '%artificial intelligence%' THEN 'AI'
-        WHEN LOWER(title) LIKE '%microsoft%' THEN 'Microsoft'
-        WHEN LOWER(title) LIKE '%tech%' OR LOWER(title) LIKE '%technology%' THEN 'Tech'
-        WHEN LOWER(title) LIKE '%startup%' OR LOWER(title) LIKE '%venture%' THEN 'Startups'
-        ELSE 'Other'
-    END AS topic_category,
-    -- Flags
-    CASE WHEN LOWER(title) LIKE '%microsoft copilot%' OR LOWER(title) LIKE '%copilot%' OR LOWER(description) LIKE '%microsoft copilot%' OR LOWER(description) LIKE '%copilot%' THEN TRUE ELSE FALSE END AS is_copilot_related,
-    CASE WHEN LOWER(title) LIKE '%microsoft%' OR LOWER(description) LIKE '%microsoft%' THEN TRUE ELSE FALSE END AS is_microsoft_related,
-    CASE WHEN LOWER(title) LIKE '%ai%' OR LOWER(description) LIKE '%ai%' THEN TRUE ELSE FALSE END AS is_ai_related
+    -- Article categorization using macro
+    {{ categorize_topic('title') }} AS topic_category,
+    -- Flags using macro for cleaner code
+    {{ flag_contains_any('title', ['microsoft copilot', 'copilot']) }}
+        OR {{ flag_contains_any('description', ['microsoft copilot', 'copilot']) }} AS is_copilot_related,
+    {{ flag_contains_any('title', ['microsoft']) }}
+        OR {{ flag_contains_any('description', ['microsoft']) }} AS is_microsoft_related,
+    {{ flag_contains_any('title', ['ai']) }}
+        OR {{ flag_contains_any('description', ['ai']) }} AS is_ai_related
 FROM {{ ref('stg_newsapi__articles_us_en') }}
-WHERE published_at IS NOT NULL 
+WHERE published_at IS NOT NULL
