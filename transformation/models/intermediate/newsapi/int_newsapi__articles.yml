@@ -28,28 +28,23 @@ models:
         tests:
           - not_null
       - name: topic_category
-        description: "Categorized topic: Microsoft Copilot, Microsoft, AI, Tech, Startups, or Other"
+        description: "Categorized topic: Data Engineering, AI, Tech, Startups, or Other"
         tests:
           - not_null
           - accepted_values:
               arguments:
                 values:
-                  - "Microsoft Copilot"
-                  - "Microsoft"
+                  - "Data Engineering"
                   - "AI"
                   - "Tech"
                   - "Startups"
                   - "Other"
-      - name: is_copilot_related
-        description: "Boolean flag indicating if article mentions Microsoft Copilot"
-        tests:
-          - not_null
-      - name: is_microsoft_related
-        description: "Boolean flag indicating if article mentions Microsoft"
+      - name: is_data_engineering_related
+        description: "Boolean flag indicating if article mentions Data Engineering topics"
         tests:
           - not_null
       - name: is_ai_related
-        description: "Boolean flag indicating if article mentions AI"
+        description: "Boolean flag indicating if article mentions AI or Machine Learning"
         tests:
           - not_null
       - name: _dlt_id

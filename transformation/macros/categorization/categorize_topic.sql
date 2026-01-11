@@ -11,10 +11,13 @@
         SQL CASE statement for topic categorization
     -#}
     CASE
-        WHEN LOWER({{ title_column }}) LIKE '%copilot%' THEN 'Microsoft Copilot'
+        WHEN LOWER({{ title_column }}) LIKE '%data engineering%' THEN 'Data Engineering'
+        WHEN LOWER({{ title_column }}) LIKE '%data pipeline%' THEN 'Data Engineering'
+        WHEN LOWER({{ title_column }}) LIKE '%etl%' THEN 'Data Engineering'
+        WHEN LOWER({{ title_column }}) LIKE '%data warehouse%' THEN 'Data Engineering'
         WHEN LOWER({{ title_column }}) LIKE '%artificial intelligence%' THEN 'AI'
         WHEN LOWER({{ title_column }}) LIKE '%ai%' THEN 'AI'
-        WHEN LOWER({{ title_column }}) LIKE '%microsoft%' THEN 'Microsoft'
+        WHEN LOWER({{ title_column }}) LIKE '%machine learning%' THEN 'AI'
         WHEN LOWER({{ title_column }}) LIKE '%technology%' THEN 'Tech'
         WHEN LOWER({{ title_column }}) LIKE '%tech%' THEN 'Tech'
         WHEN LOWER({{ title_column }}) LIKE '%startup%' THEN 'Startups'

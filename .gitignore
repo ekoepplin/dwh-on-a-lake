@@ -18,6 +18,9 @@ Thumbs.db
 
 # Custom files
 .cursor/
+.claude/
+AGENTS.md
+CLAUDE.md
 ToDo.md
 *.duckdb
 *.db
@@ -27,3 +30,4 @@ credentials/
 analytics/
 reports/
 data-governance-as-code/
+dev_flow.md
