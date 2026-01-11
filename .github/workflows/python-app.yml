@@ -28,10 +28,13 @@ jobs:
     - name: Install dependencies
       run: |
         uv sync
+    - name: Check formatting with black
+      run: |
+        uv run black --check .
     - name: Lint with flake8
       run: |
-        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,transformation/dbt_packages
+        uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,transformation/dbt_packages
     - name: Test with pytest
       run: |
         uv run pytest --ignore=.venv || true

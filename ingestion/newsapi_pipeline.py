@@ -89,7 +89,9 @@ def get_articles_us_en(
         logger.error(f"API error: {e}")
         return
     except Exception as e:
-        logger.error(f"Failed to fetch articles after {MAX_RETRY_ATTEMPTS} retries: {e}")
+        logger.error(
+            f"Failed to fetch articles after {MAX_RETRY_ATTEMPTS} retries: {e}"
+        )
         return
 
     # Batch-level quality check
