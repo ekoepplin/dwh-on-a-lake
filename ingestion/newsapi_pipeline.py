@@ -192,7 +192,9 @@ if __name__ == "__main__":
         "--prod", action="store_true", help="Use BigQuery (production mode)"
     )
     env_group.add_argument(
-        "--gcs", action="store_true", help="Use GCS filesystem (Parquet files to gs://dwh-on-a-lake-prod)"
+        "--gcs",
+        action="store_true",
+        help="Use GCS filesystem (Parquet files to gs://dwh-on-a-lake-prod)",
     )
     parser.add_argument(
         "--full-refresh", action="store_true", help="Perform a full refresh"

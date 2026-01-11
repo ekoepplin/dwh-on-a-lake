@@ -71,9 +71,9 @@ def sync_staging_to_motherduck():
     md_conn.execute(f"CREATE TABLE {SCHEMA}.{TABLE} AS SELECT * FROM staging_df")
 
     # Verify sync
-    synced_count = md_conn.execute(
-        f"SELECT COUNT(*) FROM {SCHEMA}.{TABLE}"
-    ).fetchone()[0]
+    synced_count = md_conn.execute(f"SELECT COUNT(*) FROM {SCHEMA}.{TABLE}").fetchone()[
+        0
+    ]
     print(f"Synced {synced_count} rows to MotherDuck: {MOTHERDUCK_DB}.{SCHEMA}.{TABLE}")
 
     md_conn.close()
