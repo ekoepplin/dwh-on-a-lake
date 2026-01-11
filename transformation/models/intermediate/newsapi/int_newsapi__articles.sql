@@ -16,11 +16,10 @@ SELECT
     -- Article categorization using macro
     {{ categorize_topic('title') }} AS topic_category,
     -- Flags using macro for cleaner code
-    {{ flag_contains_any('title', ['microsoft copilot', 'copilot']) }}
-        OR {{ flag_contains_any('description', ['microsoft copilot', 'copilot']) }} AS is_copilot_related,
-    {{ flag_contains_any('title', ['microsoft']) }}
-        OR {{ flag_contains_any('description', ['microsoft']) }} AS is_microsoft_related,
-    {{ flag_contains_any('title', ['ai']) }}
-        OR {{ flag_contains_any('description', ['ai']) }} AS is_ai_related
-FROM {{ ref('stg_newsapi__articles_us_en') }}
+    {{ flag_contains_any('title', ['data engineering', 'data pipeline', 'etl', 'data warehouse']) }}
+        OR {{ flag_contains_any('description', ['data engineering', 'data pipeline', 'etl', 'data warehouse']) }} AS is_data_engineering_related,
+    {{ flag_contains_any('title', ['ai', 'artificial intelligence', 'machine learning']) }}
+        OR {{ flag_contains_any('description', ['ai', 'artificial intelligence', 'machine learning']) }} AS is_ai_related
+FROM {% if target.name == 'dev' %}{{ ref('stg_newsapi__articles_us_en') }}{% else %}{{ target.schema }}.stg_newsapi__articles_us_en{% endif %}
+
 WHERE published_at IS NOT NULL

@@ -16,6 +16,9 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+on-run-start:
+  - "{{ setup_gcs_credentials() }}"
+
 models:
   dwh_on_a_lake:
     materialized: table

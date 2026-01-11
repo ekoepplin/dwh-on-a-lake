@@ -1,28 +1,22 @@
 version: 2
 
+# Note: Source data now comes from GCS Parquet files via read_parquet()
+# in src_newsapi__articles_us_en.sql - this source definition is kept
+# for documentation purposes only
+
 sources:
-  - name: newsapi
-    database: "{{ 'newsapi_articles' if target.type == 'duckdb' else target.database }}"
-    schema: "{{ 'ingest_newsapi_v1' if target.type == 'duckdb' else 'ingest_newsapi_v1' }}"
-    description: "Source data from the NewsAPI BigQuery storage"
-    freshness:
-      warn_after: {count: 1, period: hour}
-      error_after: {count: 24, period: hour}
-    loaded_at_field: "_dlt_loads.inserted_at"
+  - name: newsapi_gcs
+    description: "Source data from GCS Parquet files (dlt lake storage)"
     meta:
       owner: "data_engineering_team"
       source_system: "NewsAPI"
+      storage_location: "gs://dwh-on-a-lake-prod/dlt/ingest_newsapi_v1/"
       data_contract:
         version: "1.0"
         owner: "external_vendor"
       sla_requirements:
-        freshness: "1 hour"
+        freshness: "24 hours"
         completeness: "98%"
       contact_info:
         slack_channel: "#data-newsapi-support"
         team_email: "data-team@company.com"
-    
-    tables:
-      - name: raw_newsapi__articles_us_en
-        identifier: articles_us_en
-        description: "US English articles from NewsAPI"

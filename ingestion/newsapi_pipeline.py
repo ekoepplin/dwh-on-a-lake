@@ -89,7 +89,9 @@ def get_articles_us_en(
         logger.error(f"API error: {e}")
         return
     except Exception as e:
-        logger.error(f"Failed to fetch articles after {MAX_RETRY_ATTEMPTS} retries: {e}")
+        logger.error(
+            f"Failed to fetch articles after {MAX_RETRY_ATTEMPTS} retries: {e}"
+        )
         return
 
     # Batch-level quality check
@@ -135,7 +137,7 @@ def run_pipeline(
     """Run the NewsAPI ingestion pipeline.
 
     Args:
-        destination: Target destination ('duckdb' or 'bigquery')
+        destination: Target destination ('duckdb', 'bigquery', or 'filesystem')
         full_refresh: Whether to replace all data or merge
         query: Search query for articles
         page_size: Maximum number of articles to fetch per request
@@ -144,6 +146,12 @@ def run_pipeline(
         pipeline = dlt.pipeline(
             pipeline_name="newsapi_articles",
             destination=dlt.destinations.duckdb("/tmp/newsapi_articles.duckdb"),
+            dataset_name=target_schema_name,
+        )
+    elif destination == "filesystem":
+        pipeline = dlt.pipeline(
+            pipeline_name="newsapi_articles",
+            destination="filesystem",
             dataset_name=target_schema_name,
         )
     else:
@@ -158,6 +166,7 @@ def run_pipeline(
     load_info = pipeline.run(
         run_all_articles(query=query, page_size=page_size),
         write_disposition=write_disposition,
+        loader_file_format="parquet" if destination == "filesystem" else None,
     )
 
     # Observability: detailed load metrics
@@ -181,6 +190,11 @@ if __name__ == "__main__":
     )
     env_group.add_argument(
         "--prod", action="store_true", help="Use BigQuery (production mode)"
+    )
+    env_group.add_argument(
+        "--gcs",
+        action="store_true",
+        help="Use GCS filesystem (Parquet files to gs://dwh-on-a-lake-prod)",
     )
     parser.add_argument(
         "--full-refresh", action="store_true", help="Perform a full refresh"
@@ -206,8 +220,13 @@ if __name__ == "__main__":
         format="{time} | {level} | {message}",
     )
 
-    # Default to DuckDB; use BigQuery when --prod is specified
-    destination = "bigquery" if args.prod else "duckdb"
+    # Determine destination: --prod=BigQuery, --gcs=GCS filesystem, default=DuckDB
+    if args.prod:
+        destination = "bigquery"
+    elif args.gcs:
+        destination = "filesystem"
+    else:
+        destination = "duckdb"
 
     run_pipeline(
         destination=destination,

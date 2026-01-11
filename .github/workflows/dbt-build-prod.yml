@@ -1,0 +1,65 @@
+# This workflow runs Python linting, pytest, and dbt tests against MotherDuck (prod)
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: dbt Build & Test (MotherDuck)
+
+on:
+  push:
+    branches: [ "**" ]  # Trigger on push to any branch (including merges)
+  pull_request:
+    branches: [ "**" ]  # Trigger on PRs to any branch
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+    - name: Install dependencies
+      run: uv sync
+    - name: Check formatting with black
+      run: uv run black --check .
+    - name: Lint with flake8
+      run: |
+        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,transformation/dbt_packages
+        uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,transformation/dbt_packages
+
+  dbt-test:
+    runs-on: ubuntu-latest
+    env:
+      MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+    - name: Install dependencies
+      run: uv sync
+    - name: Cache dbt packages
+      uses: actions/cache@v4
+      with:
+        path: transformation/dbt_packages
+        key: dbt-packages-${{ hashFiles('transformation/packages.yml') }}
+    - name: Install dbt dependencies
+      run: |
+        cd transformation
+        uv run dbt deps
+    - name: Verify dbt project compiles
+      run: |
+        cd transformation
+        uv run dbt compile --target prod
+    - name: Run dbt tests on MotherDuck
+      run: |
+        cd transformation
+        uv run dbt test --target prod

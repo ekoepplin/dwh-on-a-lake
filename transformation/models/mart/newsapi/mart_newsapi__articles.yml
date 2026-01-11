@@ -26,8 +26,8 @@ models:
         description: "Total number of articles published on this date"
         tests:
           - not_null
-      - name: copilot_articles
-        description: "Number of Microsoft Copilot-related articles on this date"
+      - name: data_engineering_articles
+        description: "Number of Data Engineering-related articles on this date"
         tests:
           - not_null
     tests:
