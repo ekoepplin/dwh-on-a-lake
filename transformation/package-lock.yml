@@ -1,16 +1,25 @@
 packages:
-  - package: dbt-labs/dbt_utils
-    version: 1.3.0
-  - package: metaplane/dbt_expectations
-    version: 0.8.5
-  - package: tnightengale/dbt_meta_testing
+  - name: dbt_utils
+    package: dbt-labs/dbt_utils
+    version: 1.3.3
+  - name: dbt_expectations
+    package: metaplane/dbt_expectations
+    version: 0.10.10
+  - name: dbt_meta_testing
+    package: tnightengale/dbt_meta_testing
     version: 0.3.6
-  - package: dbt-labs/codegen
+  - name: codegen
+    package: dbt-labs/codegen
     version: 0.11.0
-  - package: dbt-labs/audit_helper
+  - name: audit_helper
+    package: dbt-labs/audit_helper
     version: 0.11.0
   - git: https://github.com/EqualExperts/dbt-unit-testing
+    name: dbt_unit_testing
     revision: 5be2a9e75a9bf58c1113abb2187283fece805f0d
-  - package: calogica/dbt_date
-    version: 0.7.2
-sha1_hash: 2de400231674ed5a23015dd309f49c89b96c27b0
+  - local: ../../dbt-data-governance-standards
+    name: dbt_data_governance_standards
+  - name: dbt_date
+    package: godatadriven/dbt_date
+    version: 0.17.1
+sha1_hash: 66179afafc708d37b7b6498512108be9ddfa62cd

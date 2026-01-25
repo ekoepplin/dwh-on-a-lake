@@ -21,7 +21,7 @@ on-run-start:
 
 models:
   dwh_on_a_lake:
-    materialized: table
+    +materialized: table
     intermediate:
       +materialized: view
     mart:
