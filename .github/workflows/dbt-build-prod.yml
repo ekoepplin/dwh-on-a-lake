@@ -58,8 +58,8 @@ jobs:
     - name: Verify dbt project compiles
       run: |
         cd transformation
-        uv run dbt compile --target prod
+        uv run dbt compile --target motherduck
     - name: Run dbt tests on MotherDuck
       run: |
         cd transformation
-        uv run dbt test --target prod
+        uv run dbt test --target motherduck
