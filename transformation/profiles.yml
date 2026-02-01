@@ -5,7 +5,6 @@ dwh-on-a-lake-profile:
       extensions:
         - httpfs
         - parquet
-        - gcs
       path: /tmp/newsapi_articles.duckdb
       schema: ingest_newsapi_v1
       threads: 4
