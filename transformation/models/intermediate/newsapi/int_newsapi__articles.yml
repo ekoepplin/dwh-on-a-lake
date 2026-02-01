@@ -6,30 +6,30 @@ models:
     columns:
       - name: source_name
         description: "Name of the news source"
-        tests:
+        data_tests:
           - not_null
       - name: author
         description: "Article author"
       - name: title
         description: "Article title"
-        tests:
+        data_tests:
           - not_null
       - name: url
         description: "URL of the article"
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: published_at
         description: "Timestamp of article publication"
-        tests:
+        data_tests:
           - not_null
       - name: article_date
         description: "Date of article publication (derived from published_at)"
-        tests:
+        data_tests:
           - not_null
       - name: topic_category
         description: "Categorized topic: Data Engineering, AI, Tech, Startups, or Other"
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               arguments:
@@ -41,14 +41,14 @@ models:
                   - "Other"
       - name: is_data_engineering_related
         description: "Boolean flag indicating if article mentions Data Engineering topics"
-        tests:
+        data_tests:
           - not_null
       - name: is_ai_related
         description: "Boolean flag indicating if article mentions AI or Machine Learning"
-        tests:
+        data_tests:
           - not_null
       - name: _dlt_id
         description: "Unique identifier from dlt"
-        tests:
+        data_tests:
           - not_null
           - unique

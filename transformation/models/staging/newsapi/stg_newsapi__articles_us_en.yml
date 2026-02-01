@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_newsapi__articles_us_en
+    description: "Staging model that deduplicates articles from GCS parquet files, keeping the latest version per URL"
+    columns:
+      - name: source_name
+        description: "Name of the news source"
+        data_tests:
+          - not_null
+      - name: author
+        description: "Article author (may be null)"
+      - name: title
+        description: "Article title"
+        data_tests:
+          - not_null
+      - name: description
+        description: "Article description/summary"
+      - name: url
+        description: "URL of the article (primary key)"
+        data_tests:
+          - not_null
+          - unique
+      - name: image_url
+        description: "URL of the article image"
+      - name: published_at
+        description: "Timestamp of article publication"
+      - name: content
+        description: "Article content (may be truncated by API)"
+      - name: language_code
+        description: "Language code (always 'en' for this source)"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - "en"
+      - name: _dlt_load_id
+        description: "dlt load identifier for tracking data lineage"
+        data_tests:
+          - not_null
+      - name: _dlt_id
+        description: "Unique row identifier from dlt"
+        data_tests:
+          - not_null
+          - unique

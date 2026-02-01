@@ -1,11 +1,6 @@
-{{
-    config(
-        enabled = (target.name == 'dev')
-    )
-}}
+{{ config(materialized = 'table') }}
 -- Deduplicate articles since GCS storage is append-only
 -- Keep the latest version of each article based on URL (primary key)
--- Only runs in dev - synced to MotherDuck for prod
 WITH ranked_articles AS (
     SELECT
         source__name AS source_name,
