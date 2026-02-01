@@ -20,6 +20,6 @@ SELECT
         OR {{ flag_contains_any('description', ['data engineering', 'data pipeline', 'etl', 'data warehouse']) }} AS is_data_engineering_related,
     {{ flag_contains_any('title', ['ai', 'artificial intelligence', 'machine learning']) }}
         OR {{ flag_contains_any('description', ['ai', 'artificial intelligence', 'machine learning']) }} AS is_ai_related
-FROM {% if target.name == 'dev' %}{{ ref('stg_newsapi__articles_us_en') }}{% else %}{{ target.schema }}.stg_newsapi__articles_us_en{% endif %}
+FROM {{ ref('stg_newsapi__articles_us_en') }}
 
 WHERE published_at IS NOT NULL

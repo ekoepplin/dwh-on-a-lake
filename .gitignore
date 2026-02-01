@@ -31,3 +31,7 @@ analytics/
 reports/
 data-governance-as-code/
 dev_flow.md
+
+dwh-on-a-lake.md
+
+claude-writer.md

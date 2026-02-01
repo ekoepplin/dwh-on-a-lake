@@ -27,21 +27,6 @@
 {% endmacro %}
 
 
-{% macro is_pattern_match(column, pattern) %}
-    {#-
-    Helper macro to check if a column contains a pattern (case-insensitive).
-
-    Args:
-        column: The column name to check
-        pattern: The pattern to search for
-
-    Returns:
-        Boolean expression
-    -#}
-    LOWER({{ column }}) LIKE '%' || LOWER('{{ pattern }}') || '%'
-{% endmacro %}
-
-
 {% macro flag_contains_any(column, patterns) %}
     {#-
     Macro to create a boolean flag that checks if column contains any of the patterns.

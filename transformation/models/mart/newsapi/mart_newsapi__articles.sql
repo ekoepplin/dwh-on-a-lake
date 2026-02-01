@@ -1,3 +1,4 @@
+{{ config(materialized = 'table') }}
 -- Minimal mart model: One time variable, one dimension, and two key metrics
 SELECT 
     article_date,

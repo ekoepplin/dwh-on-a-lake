@@ -2,6 +2,10 @@
 
 A complete, fast, and simple data warehouse solution built with open-source tools. Get from raw data to production-ready analytics in minutes—with ingestion and transformation included out of the box.
 
+<p align="center">
+  <img src="docs/images/dwh-on-a-lake.png" alt="Data Lakehouse Architecture" width="600">
+</p>
+
 ## Why This Exists
 
 Data warehousing doesn't have to be slow, complex, or expensive. This project proves you can build a production-ready data stack that's:
@@ -12,8 +16,9 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 
 ## 🏗️ Complete Data Stack
 
-- **dlt** for ingestion (NewsAPI example) → DuckDB (dev/prod)
-- **dbt Core** for transformations → analytics-ready marts
+- **dlt** for ingestion (NewsAPI example) → GCS (Parquet files)
+- **dbt Core** for transformations → DuckDB, MotherDuck, or BigQuery
+- **Lakehouse pattern**: Raw data in GCS, query with any engine
 
 ## 📊 Data Flow
 
@@ -31,30 +36,38 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
        │
        ▼
 ┌────────────────────────────────────┐
-│        Storage / Warehouse         │
-│ ┌─────────────┐                    │
-│ │  DuckDB     │                    │
-│ │ (dev/prod)  │                    │
-│ └──────┬──────┘                    │
-└────────┼───────────────────────────┘
+│         GCS (Data Lake)            │
+│   gs://dwh-on-a-lake-prod/dlt/     │
+│        *.parquet files             │
+└────────┬───────────────────────────┘
+         │
+         │  External Table Access
          ▼
-      ┌──────────────────────────┐
-      │           dbt            │
-      │   (Transforms → Marts)   │
-      └──────────┬──────────────┘
-                 ▼
-         ┌─────────────┐
-         │    Marts    │
-         │  (Ready for │
-         │  Analytics) │
-         └─────────────┘
+┌────────────────────────────────────┐
+│      Transformation Targets        │
+│  ┌──────────┐ ┌──────────────────┐ │
+│  │  DuckDB  │ │    MotherDuck    │ │
+│  │  (dev)   │ │    (cloud)       │ │
+│  └──────────┘ └──────────────────┘ │
+│  ┌──────────────────────────────┐  │
+│  │         BigQuery             │  │
+│  │         (cloud)              │  │
+│  └──────────────────────────────┘  │
+└────────┬───────────────────────────┘
+         │ dbt
+         ▼
+┌─────────────────────────────────────┐
+│  Staging → Intermediate → Mart      │
+│  (dedup)    (enrich)     (aggregate)│
+└─────────────────────────────────────┘
 ```
 
 ## ✨ Key Features
 
 - **Fast ingestion** with dlt: Connect to APIs, databases, and files in minutes
 - **Powerful transformations** with dbt: Build reliable, tested data models
-- **Dev/prod parity**: Same code runs on DuckDB locally and in production
+- **Multi-target support**: Same dbt code runs on DuckDB, MotherDuck, and BigQuery
+- **Lakehouse architecture**: GCS stores raw Parquet, compute engines query directly
 - **Zero vendor lock-in**: Everything is open source and portable
 
 ## 🚀 Getting Started
@@ -78,7 +91,11 @@ dwh-on-a-lake/
     │   ├── intermediate/        # Intermediate transformations
     │   └── mart/                # Analytics-ready marts
     ├── macros/                   # dbt macros
-    └── tests/                   # Data quality tests
+    │   ├── gcs_credentials.sql  # GCS auth for DuckDB/MotherDuck
+    │   └── external_tables/     # BigQuery external table setup
+    ├── profiles.yml             # Target configurations
+    ├── run_motherduck.sh        # MotherDuck deployment script
+    └── run_bigquery.sh          # BigQuery deployment script
 ```
 
 ## 🔗 Quick links

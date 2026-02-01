@@ -161,8 +161,14 @@ def run_pipeline(
             dataset_name=target_schema_name,
         )
 
-    # Use replace for full refresh, otherwise let resource's merge disposition handle dedup
-    write_disposition = "replace" if full_refresh else None
+    # Filesystem doesn't support merge - use append and deduplicate in dbt
+    # For DuckDB/BigQuery, use merge for deduplication at ingestion time
+    if full_refresh:
+        write_disposition = "replace"
+    elif destination == "filesystem":
+        write_disposition = "append"
+    else:
+        write_disposition = None  # Use resource's default (merge)
     load_info = pipeline.run(
         run_all_articles(query=query, page_size=page_size),
         write_disposition=write_disposition,
