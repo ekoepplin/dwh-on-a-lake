@@ -17,9 +17,7 @@ packages:
   - git: https://github.com/EqualExperts/dbt-unit-testing
     name: dbt_unit_testing
     revision: 5be2a9e75a9bf58c1113abb2187283fece805f0d
-  - local: ../../dbt-data-governance-standards
-    name: dbt_data_governance_standards
   - name: dbt_date
     package: godatadriven/dbt_date
     version: 0.17.1
-sha1_hash: 66179afafc708d37b7b6498512108be9ddfa62cd
+sha1_hash: 3ce60e21981061671bf2440fa5ec17191f381b78
