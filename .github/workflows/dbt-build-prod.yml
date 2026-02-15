@@ -58,7 +58,7 @@ jobs:
     - name: Create empty DuckLake catalog for CI
       run: |
         mkdir -p /tmp/newsapi_ducklake_data
-        python -c "import duckdb; duckdb.connect('/tmp/newsapi_ducklake_catalog.duckdb').close()"
+        uv run python -c "import duckdb; duckdb.connect('/tmp/newsapi_ducklake_catalog.duckdb').close()"
     - name: Validate dbt project structure
       run: |
         cd transformation
