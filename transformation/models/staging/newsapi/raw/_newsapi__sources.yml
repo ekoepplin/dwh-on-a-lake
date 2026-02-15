@@ -1,16 +1,14 @@
 version: 2
 
-# Note: Source data now comes from GCS Parquet files via read_parquet()
-# in src_newsapi__articles_us_en.sql - this source definition is kept
-# for documentation purposes only
-
 sources:
-  - name: newsapi_gcs
-    description: "Source data from GCS Parquet files (dlt lake storage)"
+  - name: newsapi_ducklake
+    description: "Source data from DuckLake (dlt ingestion with ACID merge)"
+    database: "{{ 'newsapi_lake' if target.name == 'dev' else 'newsapi_ducklake' }}"
+    schema: ingest_newsapi_v1
     meta:
       owner: "data_engineering_team"
       source_system: "NewsAPI"
-      storage_location: "gs://dwh-on-a-lake-prod/dlt/ingest_newsapi_v1/"
+      storage_format: "DuckLake (Parquet + ACID catalog)"
       data_contract:
         version: "1.0"
         owner: "external_vendor"
@@ -20,3 +18,6 @@ sources:
       contact_info:
         slack_channel: "#data-newsapi-support"
         team_email: "data-team@company.com"
+    tables:
+      - name: articles_us_en
+        description: "Raw articles ingested from NewsAPI, deduplicated via merge on URL"

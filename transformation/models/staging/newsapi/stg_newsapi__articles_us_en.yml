@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_newsapi__articles_us_en
-    description: "Staging model that deduplicates articles from GCS parquet files, keeping the latest version per URL"
+    description: "Staging model that renames and standardizes columns from DuckLake source. Deduplication is handled at ingestion time via merge on URL."
     columns:
       - name: source_name
         description: "Name of the news source"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run dbt transformations against MotherDuck
+# Run dbt transformations against MotherDuck DuckLake
 # Requires: MOTHERDUCK_TOKEN environment variable
 
 set -e
@@ -9,10 +9,10 @@ if [ -z "$MOTHERDUCK_TOKEN" ]; then
     exit 1
 fi
 
-echo "Running dbt against MotherDuck..."
-dbt run --target motherduck
+echo "Running dbt against MotherDuck DuckLake..."
+dbt run --profiles-dir . --target motherduck
 
 echo "Running dbt tests..."
-dbt test --target motherduck
+dbt test --profiles-dir . --target motherduck
 
-echo "MotherDuck pipeline completed successfully!"
+echo "MotherDuck DuckLake pipeline completed successfully!"

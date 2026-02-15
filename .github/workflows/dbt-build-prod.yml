@@ -31,6 +31,8 @@ jobs:
       run: |
         uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,transformation/dbt_packages
         uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,transformation/dbt_packages
+    - name: Run Python unit tests
+      run: uv run pytest ingestion/tests/ -v
 
   dbt-validate:
     runs-on: ubuntu-latest
@@ -53,11 +55,19 @@ jobs:
       run: |
         cd transformation
         uv run dbt deps
+    - name: Create empty DuckLake catalog for CI
+      run: |
+        mkdir -p /tmp/newsapi_ducklake_data
+        python -c "import duckdb; duckdb.connect('/tmp/newsapi_ducklake_catalog.duckdb').close()"
     - name: Validate dbt project structure
       run: |
         cd transformation
-        uv run dbt parse --target dev
+        uv run dbt parse --profiles-dir . --target dev
     - name: Verify dbt models compile
       run: |
         cd transformation
-        uv run dbt compile --target dev
+        uv run dbt compile --profiles-dir . --target dev
+    - name: Run dbt unit tests
+      run: |
+        cd transformation
+        uv run dbt test --profiles-dir . --target dev --select tag:unit-test

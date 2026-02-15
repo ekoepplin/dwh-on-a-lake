@@ -24,6 +24,8 @@ CLAUDE.md
 ToDo.md
 *.duckdb
 *.db
+ducklake.sqlite
+ducklake.files/
 .dbt/
 credentials/
 # Next to release

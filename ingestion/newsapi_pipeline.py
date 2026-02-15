@@ -129,7 +129,7 @@ def run_all_articles(query: str = DEFAULT_QUERY, page_size: int = DEFAULT_PAGE_S
 
 
 def run_pipeline(
-    destination: str = "bigquery",
+    destination: str = "ducklake",
     full_refresh: bool = False,
     query: str = DEFAULT_QUERY,
     page_size: int = DEFAULT_PAGE_SIZE,
@@ -137,42 +137,21 @@ def run_pipeline(
     """Run the NewsAPI ingestion pipeline.
 
     Args:
-        destination: Target destination ('duckdb', 'bigquery', or 'filesystem')
+        destination: Target destination ('ducklake' or 'motherduck')
         full_refresh: Whether to replace all data or merge
         query: Search query for articles
         page_size: Maximum number of articles to fetch per request
     """
-    if destination == "duckdb":
-        pipeline = dlt.pipeline(
-            pipeline_name="newsapi_articles",
-            destination=dlt.destinations.duckdb("/tmp/newsapi_articles.duckdb"),
-            dataset_name=target_schema_name,
-        )
-    elif destination == "filesystem":
-        pipeline = dlt.pipeline(
-            pipeline_name="newsapi_articles",
-            destination="filesystem",
-            dataset_name=target_schema_name,
-        )
-    else:
-        pipeline = dlt.pipeline(
-            pipeline_name="newsapi_articles",
-            destination=destination,
-            dataset_name=target_schema_name,
-        )
+    pipeline = dlt.pipeline(
+        pipeline_name="newsapi_articles",
+        destination=destination,
+        dataset_name=target_schema_name,
+    )
 
-    # Filesystem doesn't support merge - use append and deduplicate in dbt
-    # For DuckDB/BigQuery, use merge for deduplication at ingestion time
-    if full_refresh:
-        write_disposition = "replace"
-    elif destination == "filesystem":
-        write_disposition = "append"
-    else:
-        write_disposition = None  # Use resource's default (merge)
+    write_disposition = "replace" if full_refresh else None  # default: merge
     load_info = pipeline.run(
         run_all_articles(query=query, page_size=page_size),
         write_disposition=write_disposition,
-        loader_file_format="parquet" if destination == "filesystem" else None,
     )
 
     # Observability: detailed load metrics
@@ -192,15 +171,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NewsAPI ingestion pipeline")
     env_group = parser.add_mutually_exclusive_group()
     env_group.add_argument(
-        "--dev", action="store_true", help="Use DuckDB (development mode)"
-    )
-    env_group.add_argument(
-        "--prod", action="store_true", help="Use BigQuery (production mode)"
-    )
-    env_group.add_argument(
-        "--gcs",
+        "--dev",
         action="store_true",
-        help="Use GCS filesystem (Parquet files to gs://dwh-on-a-lake-prod)",
+        help="Use local DuckLake (development mode)",
+    )
+    env_group.add_argument(
+        "--prod",
+        action="store_true",
+        help="Use MotherDuck DuckLake (production mode)",
     )
     parser.add_argument(
         "--full-refresh", action="store_true", help="Perform a full refresh"
@@ -226,13 +204,7 @@ if __name__ == "__main__":
         format="{time} | {level} | {message}",
     )
 
-    # Determine destination: --prod=BigQuery, --gcs=GCS filesystem, default=DuckDB
-    if args.prod:
-        destination = "bigquery"
-    elif args.gcs:
-        destination = "filesystem"
-    else:
-        destination = "duckdb"
+    destination = "motherduck" if args.prod else "ducklake"
 
     run_pipeline(
         destination=destination,

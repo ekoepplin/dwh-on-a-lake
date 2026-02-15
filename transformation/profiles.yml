@@ -2,26 +2,24 @@ dwh-on-a-lake-profile:
   outputs:
     dev:
       type: duckdb
+      path: ":memory:"
       extensions:
-        - httpfs
-        - parquet
-      path: /tmp/newsapi_articles.duckdb
-      schema: ingest_newsapi_v1
+        - ducklake
+      attach:
+        - path: /tmp/newsapi_ducklake_catalog.duckdb
+          alias: newsapi_lake
+          type: ducklake
+          is_ducklake: true
+          options:
+            data_path: /tmp/newsapi_ducklake_data/
+      schema: dbt_dev
       threads: 4
 
     motherduck:
       type: duckdb
-      path: "md:dwh_on_a_lake?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
-      schema: ingest_newsapi_v1
-      threads: 4
-
-    bigquery:
-      type: bigquery
-      method: service-account
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
-      project: "{{ env_var('GCP_PROJECT_ID') }}"
-      dataset: ingest_newsapi_v1
-      location: EU
+      path: "md:?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      schema: dbt_prod
+      is_ducklake: true
       threads: 4
 
   target: dev

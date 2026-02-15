@@ -16,9 +16,9 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 
 ## 🏗️ Complete Data Stack
 
-- **dlt** for ingestion (NewsAPI example) → GCS (Parquet files)
-- **dbt Core** for transformations → DuckDB, MotherDuck, or BigQuery
-- **Lakehouse pattern**: Raw data in GCS, query with any engine
+- **dlt** for ingestion (NewsAPI example) → DuckLake (Parquet + ACID catalog)
+- **dbt Core** for transformations → DuckDB or MotherDuck
+- **DuckLake** for lake storage: ACID transactions, merge, and time travel on Parquet files
 
 ## 📊 Data Flow
 
@@ -33,32 +33,28 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 │     dlt     │
 │  (Ingest)   │
 └──────┬──────┘
-       │
+       │  merge (deduplicate on URL)
        ▼
 ┌────────────────────────────────────┐
-│         GCS (Data Lake)            │
-│   gs://dwh-on-a-lake-prod/dlt/     │
-│        *.parquet files             │
+│          DuckLake                  │
+│   ACID catalog + Parquet files    │
+│   (local or MotherDuck + GCS)     │
 └────────┬───────────────────────────┘
          │
-         │  External Table Access
+         │  dbt (attach / is_ducklake)
          ▼
 ┌────────────────────────────────────┐
 │      Transformation Targets        │
-│  ┌──────────┐ ┌──────────────────┐ │
-│  │  DuckDB  │ │    MotherDuck    │ │
-│  │  (dev)   │ │    (cloud)       │ │
-│  └──────────┘ └──────────────────┘ │
-│  ┌──────────────────────────────┐  │
-│  │         BigQuery             │  │
-│  │         (cloud)              │  │
-│  └──────────────────────────────┘  │
+│  ┌──────────────┐ ┌─────────────┐ │
+│  │   DuckDB     │ │ MotherDuck  │ │
+│  │   (dev)      │ │  (cloud)    │ │
+│  └──────────────┘ └─────────────┘ │
 └────────┬───────────────────────────┘
          │ dbt
          ▼
 ┌─────────────────────────────────────┐
 │  Staging → Intermediate → Mart      │
-│  (dedup)    (enrich)     (aggregate)│
+│  (rename)   (enrich)     (aggregate)│
 └─────────────────────────────────────┘
 ```
 
@@ -66,15 +62,15 @@ Data warehousing doesn't have to be slow, complex, or expensive. This project pr
 
 - **Fast ingestion** with dlt: Connect to APIs, databases, and files in minutes
 - **Powerful transformations** with dbt: Build reliable, tested data models
-- **Multi-target support**: Same dbt code runs on DuckDB, MotherDuck, and BigQuery
-- **Lakehouse architecture**: GCS stores raw Parquet, compute engines query directly
+- **DuckLake storage**: ACID transactions, merge deduplication, and time travel on Parquet
+- **Multi-target support**: Same dbt code runs on DuckDB (local) and MotherDuck (cloud)
 - **Zero vendor lock-in**: Everything is open source and portable
 
 ## 🚀 Getting Started
 
 Get up and running in minutes. See `GETTING_STARTED.md` for:
 - Quick installation steps
-- Dev/prod setup with DuckDB
+- Dev/prod setup with DuckLake
 - Running the full pipeline: ingestion → transformation
 - Example configurations and snippets
 
@@ -82,20 +78,26 @@ Get up and running in minutes. See `GETTING_STARTED.md` for:
 
 ```
 dwh-on-a-lake/
+├── Makefile                      # All pipeline commands (make help)
 ├── ingestion/                    # dlt pipelines
-│   └── newsapi_pipeline.py      # NewsAPI ingestion
+│   ├── newsapi_pipeline.py      # NewsAPI ingestion → DuckLake
+│   ├── schemas.py               # Pydantic validation schemas
+│   └── tests/                   # Python unit tests (schemas, merge dedup)
 │
-└── transformation/               # dbt project
-    ├── models/                   # dbt models
-    │   ├── staging/             # Raw data staging
-    │   ├── intermediate/        # Intermediate transformations
-    │   └── mart/                # Analytics-ready marts
-    ├── macros/                   # dbt macros
-    │   ├── gcs_credentials.sql  # GCS auth for DuckDB/MotherDuck
-    │   └── external_tables/     # BigQuery external table setup
-    ├── profiles.yml             # Target configurations
-    ├── run_motherduck.sh        # MotherDuck deployment script
-    └── run_bigquery.sh          # BigQuery deployment script
+├── transformation/               # dbt project
+│   ├── models/                   # dbt models
+│   │   ├── staging/             # Raw data staging
+│   │   ├── intermediate/        # Intermediate transformations
+│   │   └── mart/                # Analytics-ready marts
+│   ├── macros/                   # dbt macros
+│   │   ├── categorization/      # Business logic macros
+│   │   └── governance/          # Metadata standardization
+│   ├── tests/unit/              # dbt singular SQL unit tests
+│   ├── profiles.yml             # Target configurations (dev + motherduck)
+│   ├── run_motherduck.sh        # MotherDuck deployment script
+│   └── run_prod.sh              # Full prod pipeline script
+│
+└── tests/                        # End-to-end integration tests
 ```
 
 ## 🔗 Quick links
@@ -108,6 +110,7 @@ dwh-on-a-lake/
 - [dlt Documentation](https://dlthub.com/docs)
 - [dbt Documentation](https://docs.getdbt.com)
 - [DuckDB Documentation](https://duckdb.org/docs/)
+- [DuckLake](https://ducklake.select/)
 
 ## 📄 License
 
@@ -116,4 +119,3 @@ dwh-on-a-lake/
 ## 🤝 Contributing
 
 [Add contribution guidelines here]
-

@@ -5,8 +5,5 @@ dlthub_telemetry = true
 [normalize]
 loader_file_format = "parquet"
 
-[destination.filesystem]
-loader_file_format = "parquet"
-
-[destination.bigquery]
+[destination.ducklake]
 loader_file_format = "parquet"
