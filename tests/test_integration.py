@@ -86,7 +86,9 @@ def integration_env(tmp_path):
     profiles_dir = tmp_path / "profiles"
     profiles_dir.mkdir()
     profiles_yml = profiles_dir / "profiles.yml"
-    profiles_yml.write_text(textwrap.dedent(f"""\
+    profiles_yml.write_text(
+        textwrap.dedent(
+            f"""\
         dwh-on-a-lake-profile:
           outputs:
             dev:
@@ -104,7 +106,9 @@ def integration_env(tmp_path):
               schema: dbt_dev
               threads: 4
           target: dev
-    """))
+    """
+        )
+    )
 
     return {
         "catalog_path": str(catalog_path),
@@ -116,10 +120,14 @@ def integration_env(tmp_path):
 def _run_dbt(args: list[str], profiles_dir: str) -> subprocess.CompletedProcess:
     """Run a dbt command with the given profiles dir."""
     cmd = [
-        "uv", "run", "dbt",
+        "uv",
+        "run",
+        "dbt",
         *args,
-        "--profiles-dir", profiles_dir,
-        "--target", "dev",
+        "--profiles-dir",
+        profiles_dir,
+        "--target",
+        "dev",
     ]
     return subprocess.run(
         cmd,
@@ -140,9 +148,9 @@ class TestIntegrationPipeline:
             ["build", "--exclude", "tag:unit-test"],
             integration_env["profiles_dir"],
         )
-        assert result.returncode == 0, (
-            f"dbt build failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
-        )
+        assert (
+            result.returncode == 0
+        ), f"dbt build failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
 
     def test_source_data_after_merge(self, integration_env):
         """DuckLake source should have 4 unique articles after merge dedup."""
@@ -158,9 +166,7 @@ class TestIntegrationPipeline:
         row_count = conn.execute(
             "SELECT COUNT(*) FROM lake.ingest_newsapi_v1.articles_us_en"
         ).fetchone()
-        assert row_count[0] == 4, (
-            f"Expected 4 rows after merge, got {row_count[0]}"
-        )
+        assert row_count[0] == 4, f"Expected 4 rows after merge, got {row_count[0]}"
 
         # Verify the duplicate was merged (url /1 should have v2 title)
         title = conn.execute(

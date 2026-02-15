@@ -116,8 +116,6 @@ class TestDuckLakeMergeDedup:
             "SELECT title FROM lake.test_schema.articles_us_en "
             "WHERE url = 'https://example.com/2'"
         ).fetchone()
-        assert title[0] == "Article Two v2", (
-            f"Expected updated title, got '{title[0]}'"
-        )
+        assert title[0] == "Article Two v2", f"Expected updated title, got '{title[0]}'"
 
         conn.close()
